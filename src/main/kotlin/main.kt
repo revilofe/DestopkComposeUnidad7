@@ -53,17 +53,15 @@ fun App() {
 private fun todoComposable(todos: MutableList<String>) {
     var textTodo by remember { mutableStateOf<String>("") }
 
-    Column() {
-        Row(
-            modifier = Modifier.fillMaxSize(),
-        ) {
-            todoList(todos = todos)
-            todoInput(
-                text = textTodo,
-                onValueChange = { textTodo = it },
-                onAddClick = { todos.add(textTodo) },
-            )
-        }
+    Row(
+        modifier = Modifier.fillMaxSize(),
+    ) {
+        todoList(todos = todos)
+        todoInput(
+            text = textTodo,
+            onValueChange = { textTodo = it },
+            onAddClick = { todos.add(textTodo) },
+        )
     }
 }
 
