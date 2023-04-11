@@ -1,16 +1,24 @@
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.layout.* // ktlint-disable no-wildcard-imports
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.* // ktlint-disable no-wildcard-imports
+import androidx.compose.runtime.* // ktlint-disable no-wildcard-imports
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+
+/**
+ * Main
+ *
+ */
+fun main() = application {
+    Window(onCloseRequest = ::exitApplication) {
+        App()
+    }
+}
 
 /**
  * App
@@ -19,35 +27,44 @@ import androidx.compose.ui.window.application
 @Composable
 @Preview
 fun App() {
-    var text by remember { mutableStateOf("Hello, World!") }
-/*
-    MaterialTheme {
-        Button(onClick = {
-            text = "Hello, Desktop!"
-        }) {
-            Text(text)
-        }
-    }
- */
+    val todos = remember { mutableStateListOf<String>() }
 
     MaterialTheme {
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text("Kotlin spain") },
-                    modifier = Modifier.padding(horizontal = 0.dp, vertical = 10.dp)
+                    title = { Text("Kotlin test") },
+                    modifier = Modifier.padding(horizontal = 0.dp, vertical = 10.dp),
                 )
             },
-            modifier = Modifier.padding(10.dp)
+            modifier = Modifier.padding(10.dp),
         ) {
+            todoComposable(todos)
+        }
+    }
+}
+
+/**
+ * Todo composable
+ *
+ * @param todos
+ */
+@Composable
+private fun todoComposable(todos: MutableList<String>) {
+    var textTodo by remember { mutableStateOf<String>("") }
+
+    Column() {
+        Row(
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            todoList(todos = todos)
             todoInput(
-                text = text,
-                onValueChange = { text = it },
-                onAddClick = {},
+                text = textTodo,
+                onValueChange = { textTodo = it },
+                onAddClick = { todos.add(textTodo) },
             )
         }
     }
-
 }
 
 /**
@@ -71,24 +88,53 @@ fun todoInput(
         OutlinedTextField(
             value = text,
             label = { Text("Task name") },
-            onValueChange = onValueChange
+            onValueChange = onValueChange,
         )
         Spacer(Modifier.height(16.dp))
         Button(
-            onClick = onAddClick
+            onClick = onAddClick,
         ) {
             Text("Add Task")
         }
     }
 }
 
+/**
+ * Todo list
+ *
+ * @param todos
+ */
+@Composable
+fun todoList(todos: List<String>) {
+    Column(
+        modifier = Modifier.fillMaxWidth(0.5F)
+            .fillMaxHeight()
+            .verticalScroll(
+                state = ScrollState(0),
+                enabled = true,
+            ),
+        horizontalAlignment = Alignment.Start,
+        verticalArrangement = Arrangement.Top,
+    ) {
+        Text(
+            text = "Todo list:",
+            style = MaterialTheme.typography.h5,
+        )
+        for (todoName in todos) {
+            todoText(name = todoName)
+        }
+    }
+}
 
 /**
- * Main
+ * Todo text
  *
+ * @param name
  */
-fun main() = application {
-    Window(onCloseRequest = ::exitApplication) {
-        App()
-    }
+@Composable
+fun todoText(name: String) {
+    Text(
+        text = name,
+        modifier = Modifier.padding(2.dp),
+    )
 }
